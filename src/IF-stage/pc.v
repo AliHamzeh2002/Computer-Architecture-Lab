@@ -1,4 +1,4 @@
-module program_Counter (
+module ProgramCounter (
     input clk, rst, freeze,
     input [31:0] pc_in,
     output reg [31:0] pc_out

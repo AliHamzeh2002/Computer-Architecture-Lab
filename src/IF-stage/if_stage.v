@@ -1,46 +1,36 @@
-module IF_Stage (
-    input clk, rst, freeze, Branch_taken,
-    input [31:0] BranchAddr, 
-    output [31:0] PC, Instruction
+module IfStage (
+    input clk, rst, freeze, branch_taken,
+    input [31:0] branch_addr, 
+    output [31:0] pc, instruction
 );
-    wire [31:0] PC_Adder_Out;
-    wire [31:0] PC_Out;
-    wire [31:0] mux_Out;
-    wire [31:0] instruction_Memory_Out;
+    wire [31:0] pc_adder_out;
+    wire [31:0] mux_out;
 
-    pc_Adder pc_Adder (
-        .in(PC_Out),
-        .out(PC_Adder_Out)
+    PcAdder pc_adder (
+        .in(pc),
+        .out(pc_adder_out)
     );
 
-    mux_2_to_1 mux_2_to_1 (
-        .in0(PC_Adder_Out),
-        .in1(BranchAddr),
-        .sel(Branch_taken),
-        .out(mux_Out)
+    Mux2To1 mux_2_to_1 (
+        .in0(pc_adder_out),
+        .in1(branch_addr),
+        .sel(branch_taken),
+        .out(mux_out)
     );
 
-    program_Counter program_Counter (
+    ProgramCounter program_counter (
         .clk(clk),
         .rst(rst),
         .freeze(freeze),
-        .pc_in(mux_Out),
-        .pc_out(PC_Out)
+        .pc_in(mux_out),
+        .pc_out(pc)
     );
 
-    instruction_Memory instruction_Memory (
+    InstructionMemory instruction_memory (
         .clk(clk),
         .rst(rst),
-        .address(PC_Out),
-        .instruction(instruction_Memory_Out)
+        .address(pc),
+        .instruction(instruction)
     );
-
-    assign PC = PC_Out;
-    assign Instruction = instruction_Memory_Out;
-
-
-
-
-
     
 endmodule

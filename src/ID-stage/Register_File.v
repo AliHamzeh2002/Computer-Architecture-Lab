@@ -1,8 +1,8 @@
 module RegisterFile (
     input clk, rst,
-    input [3:0] src1, src2, Dest_wb,
-    input [31:0] Result_WB,
-    input writeBackEn,
+    input [3:0] src1, src2, wb_dest,
+    input [31:0] wb_value,
+    input wb_en,
     output [31:0] reg1, reg2
 );
 
@@ -18,8 +18,8 @@ module RegisterFile (
                 registers[i] <= 32'b0;
             end
         end 
-        else if (writeBackEn) begin
-            registers[Dest_wb] <= Result_WB;
+        else if (wb_en) begin
+            registers[wb_dest] <= wb_value;
         end
     end
     

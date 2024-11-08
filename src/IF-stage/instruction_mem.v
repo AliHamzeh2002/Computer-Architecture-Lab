@@ -1,24 +1,8 @@
-module instruction_Memory (
+module InstructionMemory (
     input clk, rst,
     input [31:0] address,
     output reg [31:0] instruction
 );
-    // reg [31:0] mem [0:1023];
-    // initial begin
-    //     $readmemh("instructions.hex", mem);
-    // end
-    // assign instruction = mem[pc];
-
-    //instructions:
-    /*
-    32'b000000_00001_00010_00000_00000000000;
-    32'b000000_00011_00100_00000_00000000000;
-    32'b000000_00101_00110_00000_00000000000;
-    32'b000000_00111_01000_00010_00000000000;
-    32'b000000_01001_01010_00011_00000000000;
-    32'b000000_01011_01100_00000_00000000000;
-    32'b000000_01101_01110_00000_00000000000;
-    */
     always @(*) begin
         case (address)
             32'd0  : instruction <= 32'b1110_00_1_1101_0_0000_0000_000000010100; // MOV R0, #20

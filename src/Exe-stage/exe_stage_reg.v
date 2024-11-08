@@ -1,13 +1,13 @@
-module EXE_Stage_Reg (
+module ExeStageReg (
     input clk, rst,
-    input [31:0] PC_in,
-    output reg [31:0] PC
+    input [31:0] pc_in,
+    output reg [31:0] pc_out
 );
     always @(posedge clk, posedge rst) begin
         if (rst) begin
-            PC <= 32'h0;
+            pc_out <= 32'h0;
         end else begin
-            PC <= PC_in;
+            pc_out <= pc_in;
         end
     end
   
