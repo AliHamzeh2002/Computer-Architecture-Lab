@@ -12,7 +12,7 @@ module ControlUnit (
 
     always @(mode, opcode, s_in) begin
         exe_cmd = 4'b0000;
-        wb_en = 1'b0;
+        wb_en = 1'b1;
         mem_r_en = 1'b0;
         mem_w_en = 1'b0;
         if (mode == 2'b0) begin
@@ -26,8 +26,14 @@ module ControlUnit (
                 4'b0000: exe_cmd = 4'b0110; // AND
                 4'b1100: exe_cmd = 4'b0111; // ORR
                 4'b0001: exe_cmd = 4'b1000; // EOR
-                4'b1010: exe_cmd = 4'b0100; // CMP
-                4'b1000: exe_cmd = 4'b0110; // TST
+                4'b1010: begin
+                    exe_cmd = 4'b0100; // CMP
+                    wb_en = 1'b0;
+                end
+                4'b1000: begin
+                    exe_cmd = 4'b0110; // TST
+                    wb_en = 1'b0;
+                end
                 default: exe_cmd = 4'b0000; // NOP
             endcase
         end

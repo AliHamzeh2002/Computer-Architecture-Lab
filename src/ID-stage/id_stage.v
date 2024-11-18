@@ -8,7 +8,8 @@ module IdStage (
     output [3:0] dest,
     output [11:0] shift_operand,
     output [23:0] signed_imm_24,
-    output imm
+    output imm,
+    output c_out
 );
 
     wire S = instruction[20];
@@ -23,6 +24,7 @@ module IdStage (
     assign signed_imm_24 = instruction[23:0];
     assign dest = instruction[15:12]; 
     assign pc_out = pc_in;
+    assign c_out = status_reg_out[1];
 
 
     wire wb_en_cu_out, mem_read_cu_out, mem_write_cu_out, b_cu_out, s_cu_out, condition_check_out;

@@ -13,3 +13,12 @@ transcript
 work
 *.dbg
 *.ini
+
+*.qpf
+*.qsf
+*.bak
+*.qws
+/incremental_db
+/output_files
+/simulation
+/db

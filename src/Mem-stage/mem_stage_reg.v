@@ -1,13 +1,23 @@
 module MemStageReg (
     input clk, rst,
-    input [31:0] pc_in,
-    output reg [31:0] pc_out
+    input wb_en_in, mem_r_en_in,
+    input [31:0] alu_res_in,
+    input [3:0] dest_in,
+    output reg mem_r_en_out, wb_en_out,
+    output reg [31:0] alu_res_out,
+    output reg [3:0] dest_out
 );
     always @(posedge clk, posedge rst) begin
         if (rst) begin
-            pc_out <= 32'h0;
+            mem_r_en_out <= 0;
+            wb_en_out <= 0;
+            alu_res_out <= 0;
+            dest_out <= 0;
         end else begin
-            pc_out <= pc_in;
+            mem_r_en_out <= mem_r_en_in;
+            wb_en_out <= wb_en_in;
+            alu_res_out <= alu_res_in;
+            dest_out <= dest_in;
         end
     end
   
