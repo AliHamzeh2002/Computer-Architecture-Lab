@@ -9,7 +9,9 @@ module IdStage (
     output [11:0] shift_operand,
     output [23:0] signed_imm_24,
     output imm,
-    output c_out
+    output c_out,
+    output two_src,
+    output [3:0] src1, src2
 );
 
     wire S = instruction[20];
@@ -25,12 +27,11 @@ module IdStage (
     assign dest = instruction[15:12]; 
     assign pc_out = pc_in;
     assign c_out = status_reg_out[1];
-
+    assign two_src = (~imm) | mem_w_en;
 
     wire wb_en_cu_out, mem_read_cu_out, mem_write_cu_out, b_cu_out, s_cu_out, condition_check_out;
     wire [3:0] exe_cmd_cu_out;
     wire cu_en = (~condition_check_out | hazard);
-    wire [3:0] src1, src2;
 
     assign src1 = rn;
     assign src2 = (mem_w_en == 1'b1) ? rd : rm;

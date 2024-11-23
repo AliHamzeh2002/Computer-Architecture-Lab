@@ -4,11 +4,11 @@ module IfStageReg (
     output reg [31:0] pc_out, instruction_out
 );
     always@(posedge clk, posedge rst) begin
-        if (rst) begin
+        if (rst || flush) begin
             pc_out <= 32'h0;
             instruction_out <= 32'h0;
         end
-        else begin
+        else if(~freeze) begin
             pc_out <= pc_in;
             instruction_out <= instruction_in;
         end

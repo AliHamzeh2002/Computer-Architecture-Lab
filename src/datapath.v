@@ -2,6 +2,7 @@ module datapath (
     input clk, rst
 );
 
+    wire hazard;
     wire [31:0] pc_if;
     wire [31:0] instruction_if;
     wire [31:0] instruction_id;
@@ -16,24 +17,27 @@ module datapath (
     wire wb_wb_en_wb;
 
     wire [31:0] branch_address_exe;
-
+    wire freeze = hazard;
+    wire flush = branch_taken;
 
     IfStage if_stage(.clk(clk), 
                         .rst(rst), 
-                        .freeze(1'b0), 
+                        .freeze(freeze), 
                         .branch_taken(branch_taken), 
                         .branch_addr(branch_address_exe), 
                         .pc(pc_if), 
-                        .instruction(instruction_if));
+                        .instruction(instruction_if)
+    );
 
     IfStageReg if_stage_reg(.clk(clk), 
                                 .rst(rst), 
-                                .freeze(1'b0),
+                                .freeze(freeze),
                                 .flush(1'b0),
                                 .pc_in(pc_if),
                                 .instruction_in(instruction_if),
                                 .pc_out(pc_id),
-                                .instruction_out(instruction_id));
+                                .instruction_out(instruction_id)
+    );
 
     wire wb_en_id, mem_r_en_id, mem_w_en_id, b_id, s_id;
     wire [3:0] exe_cmd_id;
@@ -43,6 +47,8 @@ module datapath (
     wire [23:0] signed_imm_24_id;
     wire imm_id;
     wire c_id;
+    wire two_src_id;
+    wire [3:0] src1_id, src2_id;
 
     wire [3:0] status_register_out_exe;
 
@@ -69,7 +75,11 @@ module datapath (
                         .shift_operand(shift_operand_id),
                         .signed_imm_24(signed_imm_24_id),
                         .imm(imm_id),
-                        .c_out(c_id));
+                        .c_out(c_id),
+                        .two_src(two_src_id),
+                        .src1(src1_id),
+                        .src2(src2_id)
+    );
 
     wire wb_en_exe, mem_r_en_exe, mem_w_en_exe, b_exe, s_exe;
     wire [3:0] exe_cmd_exe;
@@ -141,11 +151,10 @@ module datapath (
                         .val_rm_out(val_rm_out_exe),
                         .dest_out(dest_out_exe),
                         .status_register_out(status_register_out_exe),
-                        .branch_address(branch_address_exe));
-    
-    
+                        .branch_address(branch_address_exe)
+    );
 
-    wire mem_r_en_mem, mem_w_en_mem, wb_en_out_mem;
+    wire mem_r_en_mem, mem_w_en_mem, wb_en_mem;
     wire [31:0] alu_res_mem;
     wire [31:0] val_rm_mem;
     wire [3:0] dest_mem;
@@ -161,34 +170,75 @@ module datapath (
         .dest_in(dest_out_exe),
         .mem_r_en_out(mem_r_en_mem),
         .mem_w_en_out(mem_w_en_mem),
-        .wb_en_out(wb_en_out_mem),
+        .wb_en_out(wb_en_mem),
         .alu_res_out(alu_res_mem),
         .val_rm_out(val_rm_mem),
         .dest_out(dest_mem)
     );
 
+    wire wb_en_out_mem, mem_r_en_out_mem;
+    wire [31:0] alu_res_out_mem;
+    wire [31:0] data_memory_out_mem;
+    wire [3:0] dest_out_mem;
+
+    MemStage mem_stage(
+        .clk(clk),
+        .rst(rst),
+        .wb_en_in(wb_en_mem),
+        .mem_r_en_in(mem_r_en_mem),
+        .mem_w_en_in(mem_w_en_mem),
+        .alu_res_in(alu_res_mem),
+        .val_rm_in(val_rm_mem),
+        .dest_in(dest_mem),
+        .wb_en_out(wb_en_out_mem),
+        .mem_r_en_out(mem_r_en_out_mem),
+        .alu_res_out(alu_res_out_mem),
+        .data_memory_out(data_memory_out_mem),
+        .dest_out(dest_out_mem)
+    );
+
     wire wb_en_wb, mem_r_en_wb;
     wire [31:0] alu_res_wb;
+    wire [31:0] data_memory_wb;
     wire [3:0] dest_wb;
 
     MemStageReg mem_stage_reg(.clk(clk),
                         .rst(rst),
                         .wb_en_in(wb_en_out_mem),
-                        .mem_r_en_in(mem_r_en_mem),
+                        .mem_r_en_in(mem_r_en_out_mem),
                         .alu_res_in(alu_res_mem),
                         .dest_in(dest_mem),
+                        .data_memory_in(data_memory_out_mem),
                         .wb_en_out(wb_en_wb),
                         .mem_r_en_out(mem_r_en_wb),
                         .alu_res_out(alu_res_wb),
-                        .dest_out(dest_wb));
+                        .dest_out(dest_wb),
+                        .data_memory_out(data_memory_wb)
+    );
 
     WbStage wb_stage(.wb_en(wb_en_wb),
                         .alu_res(alu_res_wb),
-                        .data_mem_res(32'b0),
+                        .data_mem_res(data_memory_wb),
                         .dest(dest_wb),
                         .wb_wb_en(wb_wb_en_wb),
                         .wb_dest(wb_dest_wb),
-                        .wb_value(wb_value_wb));
+                        .wb_value(wb_value_wb)
+    );
+
+    HazardUnit hazard_unit(
+        .src1(src1_id),
+        .src2(src2_id),
+        .exe_dest(dest_exe),
+        .exe_wb_en(wb_en_exe),
+        .mem_dest(dest_mem),
+        .mem_wb_en(wb_en_mem),
+        .two_src(two_src_id),
+        .hazard(hazard)
+    );
+
+    
+
+    
 
     
     

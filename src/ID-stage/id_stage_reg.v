@@ -1,5 +1,5 @@
 module IDStageReg (
-    input clk, rst,
+    input clk, rst, flush,
     input [31:0] pc_in,
     input wb_en_in, mem_r_en_in, mem_w_en_in, b_in, s_in,
     input [31:0] val_rn_in, val_rm_in,
@@ -19,7 +19,7 @@ module IDStageReg (
 );
 
     always @(posedge clk, posedge rst) begin
-        if (rst) begin
+        if (rst || flush) begin
             pc_out <= 32'h0;
             wb_en_out <= 1'b0;
             mem_r_en_out <= 1'b0;
