@@ -25,14 +25,14 @@ module datapath (
                         .freeze(freeze), 
                         .branch_taken(branch_taken), 
                         .branch_addr(branch_address_exe), 
-                        .pc(pc_if), 
+                        .pc_adder_out(pc_if), 
                         .instruction(instruction_if)
     );
 
     IfStageReg if_stage_reg(.clk(clk), 
                                 .rst(rst), 
                                 .freeze(freeze),
-                                .flush(1'b0),
+                                .flush(branch_taken),
                                 .pc_in(pc_if),
                                 .instruction_in(instruction_if),
                                 .pc_out(pc_id),
@@ -92,6 +92,7 @@ module datapath (
 
     IDStageReg id_stage_reg(.clk(clk),
                             .rst(rst),
+                            .flush(branch_taken),
                             .pc_in(pc_out_id),
                             .wb_en_in(wb_en_id),
                             .mem_r_en_in(mem_r_en_id),
@@ -217,6 +218,7 @@ module datapath (
     );
 
     WbStage wb_stage(.wb_en(wb_en_wb),
+                        .mem_r_en(mem_r_en_wb),
                         .alu_res(alu_res_wb),
                         .data_mem_res(data_memory_wb),
                         .dest(dest_wb),

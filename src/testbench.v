@@ -12,7 +12,7 @@ module test ();
         clk = 0;
         #10 rst = 1;
         #10 rst = 0;
-        #10000 $stop;
+        #100000 $stop;
     end
     
 endmodule

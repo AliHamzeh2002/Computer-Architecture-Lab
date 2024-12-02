@@ -1,10 +1,10 @@
 module IfStage (
     input clk, rst, freeze, branch_taken,
     input [31:0] branch_addr, 
-    output [31:0] pc, instruction
+    output [31:0] pc_adder_out, instruction
 );
-    wire [31:0] pc_adder_out;
     wire [31:0] mux_out;
+    wire [31:0] pc;
 
     PcAdder pc_adder (
         .in(pc),

@@ -10,11 +10,16 @@ module ALU(
     wire z_out; 
     wire n_out; 
 
+    wire [31:0] c_in_extended = {{31{1'b0}}, c_in};
+    wire [31:0] not_c_in_extended = {{31{1'b0}}, ~c_in};
+
     assign status_bits = {z_out, c_out, v_out, n_out};
     
     reg [32:0] temp_result;
 
     always @(*) begin
+        c_out = 0;
+        v_out = 0;
         case(alu_op)
             4'b0010 : begin // ADD
                 temp_result = {1'b0, src_a} + {1'b0, src_b};
@@ -24,7 +29,7 @@ module ALU(
             end
 
             4'b0011 : begin // ADC (Add with Carry)
-                temp_result = {1'b0, src_a} + {1'b0, src_b} + c_in;
+                temp_result = {1'b0, src_a} + {1'b0, src_b} + c_in_extended;
                 alu_result = temp_result[31:0];
                 c_out = temp_result[32];
                 v_out = (src_a[31] == src_b[31]) && (alu_result[31] != src_a[31]);
@@ -38,7 +43,7 @@ module ALU(
             end
 
             4'b0101 : begin // SBC 
-                temp_result = {1'b0, src_a} - {1'b0, src_b} - ~c_in;
+                temp_result = {1'b0, src_a} - {1'b0, src_b} - not_c_in_extended;
                 alu_result = temp_result[31:0];
                 c_out = ~temp_result[32];
                 v_out = (src_a[31] != src_b[31]) && (alu_result[31] != src_a[31]);

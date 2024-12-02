@@ -5,8 +5,6 @@ module Val2Generate(input [31: 0] val_rm,
         output reg[31:0] out
 );
 
-
-
     wire[4:0] shift_imm = shift_operand[11:7];
     wire[1:0] shift = shift_operand[6:5];
 

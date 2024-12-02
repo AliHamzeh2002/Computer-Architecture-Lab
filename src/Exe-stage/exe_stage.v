@@ -27,7 +27,7 @@ module ExeStage (
     assign mem_w_en_out = mem_w_en_in;
     assign val_rm_out = val_rm_in;
     assign b_out = b_in;
-    assign branch_address = pc_in + signed_imm_24_in;
+    assign branch_address = pc_in + {{6{signed_imm_24_in[23]}}, signed_imm_24_in, 2'b00};
 
     wire s_type_signal = mem_r_en_in | mem_w_en_in;
     wire [3:0] status_register_in;
@@ -55,7 +55,7 @@ module ExeStage (
     StatusReg status_register(
         .clk(clk),
         .rst(rst),
-        .wb_en(s_in),
+        .status_en(s_in),
         .in_data(status_register_in),
         .out_data(status_register_out)
     );

@@ -37,14 +37,14 @@ module ControlUnit (
                 default: exe_cmd = 4'b0000; // NOP
             endcase
         end
-        else if (mode == 2'b01 && opcode == 4'b0010) begin // STR LDR
+        else if (mode == 2'b01 && opcode == 4'b0100) begin // STR LDR
             exe_cmd = 4'b0010;
-            if (s_in == 1'b1) begin
+            if (s_in == 1'b0) begin //STR
                 mem_w_en = 1'b1;
+                wb_en = 1'b0;
             end
-            if (s_in == 1'b0) begin
+            if (s_in == 1'b1) begin // LDR
                 mem_r_en = 1'b1;
-                wb_en = 1'b1;
             end
         end
     end

@@ -19,7 +19,23 @@ module IDStageReg (
 );
 
     always @(posedge clk, posedge rst) begin
-        if (rst || flush) begin
+        if (rst) begin
+            pc_out <= 32'h0;
+            wb_en_out <= 1'b0;
+            mem_r_en_out <= 1'b0;
+            mem_w_en_out <= 1'b0;
+            exe_cmd_out <= 4'b0;
+            b_out <= 1'b0;
+            s_out <= 1'b0;
+            val_rn_out <= 32'h0;
+            val_rm_out <= 32'h0;
+            dest_out <= 4'b0;
+            shift_operand_out <= 12'h0;
+            signed_imm_24_out <= 24'h0;
+            imm_out <= 1'b0;
+            c_out <= 1'b0;
+        end
+        else if (flush) begin
             pc_out <= 32'h0;
             wb_en_out <= 1'b0;
             mem_r_en_out <= 1'b0;

@@ -4,10 +4,10 @@ module ConditionCheck (
     output reg out                
 );
 
-    wire z = status_reg_out[0];   // Zero flag
-    wire c = status_reg_out[1];   // Carry flag
-    wire v = status_reg_out[2];   // Overflow flag
-    wire n = status_reg_out[3];   // Negative flag
+    wire z = status_reg_out[3];   // Zero flag
+    wire c = status_reg_out[2];   // Carry flag
+    wire v = status_reg_out[1];   // Overflow flag
+    wire n = status_reg_out[0];   // Negative flag
 
     always @(*) begin
         case (cond)
