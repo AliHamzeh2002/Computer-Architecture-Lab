@@ -192,6 +192,15 @@ module datapath (
     wire [31:0] data_memory_out_mem;
     wire [3:0] dest_out_mem;
 
+    wire mem_ready;
+    wire [15:0] SRAM_DQ;
+    wire [17:0] SRAM_ADDR;
+    wire SRAM_UB_N;
+    wire SRAM_LB_N;
+    wire SRAM_WE_N;
+    wire SRAM_CE_N;
+    wire SRAM_OE_N;
+
     MemStage mem_stage(
         .clk(clk),
         .rst(rst),
@@ -205,7 +214,23 @@ module datapath (
         .mem_r_en_out(mem_r_en_out_mem),
         .alu_res_out(alu_res_out_mem),
         .data_memory_out(data_memory_out_mem),
-        .dest_out(dest_out_mem)
+        .dest_out(dest_out_mem),
+        .ready(mem_ready),
+        .SRAM_DQ(SRAM_DQ),
+        .SRAM_ADDR(SRAM_ADDR),
+        .SRAM_UB_N(SRAM_UB_N),
+        .SRAM_LB_N(SRAM_LB_N),
+        .SRAM_WE_N(SRAM_WE_N),
+        .SRAM_CE_N(SRAM_CE_N),
+        .SRAM_OE_N(SRAM_OE_N)
+    );
+
+    Sram sram(
+        .clk(clk),
+        .rst(rst),
+        .SRAM_WE_N(SRAM_WE_N),
+        .SRAM_ADDR(SRAM_ADDR),
+        .SRAM_DQ(SRAM_DQ)
     );
 
     wire wb_en_wb, mem_r_en_wb;
@@ -247,6 +272,7 @@ module datapath (
         .exe_mem_r_en(mem_r_en_exe),
         .mem_wb_en(wb_en_mem),
         .two_src(two_src_id),
+        .ready(mem_ready),
         .hazard(hazard)
     );
 
@@ -261,6 +287,7 @@ module datapath (
         .sel_src1(sel_src1),
         .sel_src2(sel_src2)
     );
+
 
     
 
