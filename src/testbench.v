@@ -1,9 +1,10 @@
 module test ();
-    reg clk, rst;
+    reg clk, rst, forward_en;
 
     datapath dp (
         .clk(clk),
-        .rst(rst)
+        .rst(rst),
+        .forward_en(forward_en)
     );
 
     always #10 clk = ~clk;
@@ -12,6 +13,7 @@ module test ();
         clk = 0;
         #10 rst = 1;
         #10 rst = 0;
+        forward_en = 0;
         #100000 $stop;
     end
     

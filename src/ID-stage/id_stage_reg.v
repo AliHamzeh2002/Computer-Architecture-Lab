@@ -6,6 +6,7 @@ module IDStageReg (
     input [3:0] dest_in, exe_cmd_in,
     input [11:0] shift_operand_in,
     input [23:0] signed_imm_24_in,
+    input [3:0] src1_in, src2_in,
     input imm_in,
     input c_in,
     output reg [31:0] pc_out,
@@ -14,6 +15,7 @@ module IDStageReg (
     output reg [3:0] dest_out, exe_cmd_out, 
     output reg [11:0] shift_operand_out,
     output reg [23:0] signed_imm_24_out,
+    output reg [3:0] src1_out, src2_out,
     output reg imm_out,
     output reg c_out
 );
@@ -34,6 +36,8 @@ module IDStageReg (
             signed_imm_24_out <= 24'h0;
             imm_out <= 1'b0;
             c_out <= 1'b0;
+            src1_out <= 4'b0;
+            src2_out <= 4'b0;
         end
         else if (flush) begin
             pc_out <= 32'h0;
@@ -50,6 +54,8 @@ module IDStageReg (
             signed_imm_24_out <= 24'h0;
             imm_out <= 1'b0;
             c_out <= 1'b0;
+            src1_out <= 4'b0;
+            src2_out <= 4'b0;
         end else begin
             pc_out <= pc_in;
             wb_en_out <= wb_en_in;
@@ -65,6 +71,8 @@ module IDStageReg (
             signed_imm_24_out <= signed_imm_24_in;
             imm_out <= imm_in;
             c_out <= c_in;
+            src1_out <= src1_in;
+            src2_out <= src2_in;
         end
     end
 

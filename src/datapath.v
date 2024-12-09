@@ -1,5 +1,5 @@
 module datapath (
-    input clk, rst
+    input clk, rst, forward_en
 );
 
     wire hazard;
@@ -82,7 +82,7 @@ module datapath (
     );
 
     wire wb_en_exe, mem_r_en_exe, mem_w_en_exe, b_exe, s_exe;
-    wire [3:0] exe_cmd_exe;
+    wire [3:0] exe_cmd_exe, src1_exe, src2_exe;
     wire [31:0] pc_out_exe, val_rn_exe, val_rm_exe;
     wire [3:0] dest_exe;
     wire [11:0] shift_operand_exe;
@@ -103,6 +103,8 @@ module datapath (
                             .val_rn_in(val_rn_id),
                             .val_rm_in(val_rm_id),
                             .dest_in(dest_id),
+                            .src1_in(src1_id),
+                            .src2_in(src2_id),
                             .shift_operand_in(shift_operand_id),
                             .signed_imm_24_in(signed_imm_24_id),
                             .imm_in(imm_id),
@@ -120,13 +122,18 @@ module datapath (
                             .shift_operand_out(shift_operand_exe),
                             .signed_imm_24_out(signed_imm_24_exe),
                             .imm_out(imm_exe),
-                            .c_out(c_exe)
+                            .c_out(c_exe),
+                            .src1_out(src1_exe),
+                            .src2_out(src2_exe)
     );
 
     wire wb_en_out_exe, mem_r_en_out_exe, mem_w_en_out_exe;
     wire [31:0] alu_res_exe;
     wire [31:0] val_rm_out_exe;
+    wire [31:0] alu_res_mem;
+
     wire [3:0] dest_out_exe;
+    wire [1:0] sel_src1, sel_src2;
 
     ExeStage exe_stage(.clk(clk),
                         .rst(rst),
@@ -137,6 +144,10 @@ module datapath (
                         .s_in(s_exe),
                         .b_in(b_exe),
                         .pc_in(pc_exe),
+                        .sel_src1(sel_src1),
+                        .sel_src2(sel_src2),
+                        .alu_res_mem(alu_res_mem),
+                        .wb_value(wb_value_wb),
                         .val_rn_in(val_rn_exe),
                         .val_rm_in(val_rm_exe),
                         .shift_operand_in(shift_operand_exe),
@@ -156,7 +167,6 @@ module datapath (
     );
 
     wire mem_r_en_mem, mem_w_en_mem, wb_en_mem;
-    wire [31:0] alu_res_mem;
     wire [31:0] val_rm_mem;
     wire [3:0] dest_mem;
     
@@ -228,14 +238,28 @@ module datapath (
     );
 
     HazardUnit hazard_unit(
+        .forward_en(forward_en),
         .src1(src1_id),
         .src2(src2_id),
         .exe_dest(dest_exe),
         .exe_wb_en(wb_en_exe),
         .mem_dest(dest_mem),
+        .exe_mem_r_en(mem_r_en_exe),
         .mem_wb_en(wb_en_mem),
         .two_src(two_src_id),
         .hazard(hazard)
+    );
+
+    ForwardingUnit forwarding_unit(
+        .wb_en_mem(wb_en_mem),
+        .wb_en_wb(wb_en_wb),
+        .forward_en(forward_en),
+        .src1(src1_exe),
+        .src2(src2_exe),
+        .dest_mem(dest_mem),
+        .dest_wb(dest_wb),
+        .sel_src1(sel_src1),
+        .sel_src2(sel_src2)
     );
 
     

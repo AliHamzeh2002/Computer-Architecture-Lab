@@ -16,6 +16,7 @@ module MemStage (
 
     DataMemory data_memory(
         .clk(clk),
+        .rst(rst),
         .mem_w_en(mem_w_en_in),
         .mem_r_en(mem_r_en_in),
         .alu_res(alu_res_in),
