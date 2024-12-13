@@ -9,10 +9,10 @@ module MemStage (
     output [31:0] data_memory_out,
     output [3:0] dest_out,
     inout [15:0] SRAM_DQ,
-    output reg [17:0] SRAM_ADDR,
+    output [17:0] SRAM_ADDR,
     output SRAM_UB_N,
     output SRAM_LB_N,
-    output reg SRAM_WE_N,
+    output SRAM_WE_N,
     output SRAM_CE_N,
     output SRAM_OE_N,
     output mem_ready

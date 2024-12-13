@@ -13,7 +13,7 @@ module test ();
         clk = 0;
         #10 rst = 1;
         #10 rst = 0;
-        forward_en = 0;
+        forward_en = 1;
         #100000 $stop;
     end
     

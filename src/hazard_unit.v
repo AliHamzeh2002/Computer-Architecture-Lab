@@ -4,11 +4,10 @@ module HazardUnit (
     input exe_wb_en, forward_en, exe_mem_r_en,
     input [3:0] mem_dest,
     input mem_wb_en, two_src,
-    input mem_ready,
     output reg hazard
 );
     always @(*) begin
-        hazard = 1'b0;//(mem_ready) ? 1'b0 : 1'b1;
+        hazard = 1'b0;
         if (forward_en)begin 
             if (src1 == exe_dest && exe_wb_en && exe_mem_r_en) begin
                 hazard = 1'b1;

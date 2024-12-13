@@ -1,5 +1,5 @@
 module IDStageReg (
-    input clk, rst, flush,
+    input clk, rst, flush, freeze,
     input [31:0] pc_in,
     input wb_en_in, mem_r_en_in, mem_w_en_in, b_in, s_in,
     input [31:0] val_rn_in, val_rm_in,
@@ -56,7 +56,7 @@ module IDStageReg (
             c_out <= 1'b0;
             src1_out <= 4'b0;
             src2_out <= 4'b0;
-        end else begin
+        end else if (~freeze) begin
             pc_out <= pc_in;
             wb_en_out <= wb_en_in;
             mem_r_en_out <= mem_r_en_in;

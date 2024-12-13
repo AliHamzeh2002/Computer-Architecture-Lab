@@ -33,7 +33,7 @@ module SramController(
 
     reg [15:0] data_queue;
 
-    assign SRAM_ADDR = (wr_en) ? data_queue : 16'bz;
+    assign SRAM_DQ = (wr_en) ? data_queue : 16'bz;
 
     reg [2:0] ps, ns;
 
@@ -62,6 +62,9 @@ module SramController(
                 if (wr_en) begin
                     data_queue = write_data[15:0];
                 end
+                else if (rd_en) begin
+                    read_data[15:0] = SRAM_DQ;
+                end
             end
             `DATA_HIGH: begin
                 SRAM_ADDR = sram_high_addr;
@@ -69,15 +72,12 @@ module SramController(
                 if (wr_en) begin
                     data_queue = write_data[31:16];
                 end
-                if (rd_en) begin
-                    read_data[15:0] = SRAM_DQ;
-                end
-            end
-            `WAIT1: begin
-                if (rd_en) begin
+                else if (rd_en) begin
                     read_data[31:16] = SRAM_DQ;
                 end
+                
             end
+            `WAIT1:;
             `WAIT2:;
             `DONE: ready = 1'b1;
             default:;

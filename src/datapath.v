@@ -11,18 +11,22 @@ module datapath (
     wire [31:0] pc_mem;
     wire [31:0] pc_wb;
     wire branch_taken;
+    wire mem_ready;
+
 
     wire [3:0] wb_dest_wb;
     wire [31:0] wb_value_wb;
     wire wb_wb_en_wb;
 
     wire [31:0] branch_address_exe;
-    wire freeze = hazard;
+    wire freeze_if = hazard | (~mem_ready);
+    wire freeze_others = ~mem_ready;
+
     wire flush = branch_taken;
 
     IfStage if_stage(.clk(clk), 
                         .rst(rst), 
-                        .freeze(freeze), 
+                        .freeze(freeze_if), 
                         .branch_taken(branch_taken), 
                         .branch_addr(branch_address_exe), 
                         .pc_adder_out(pc_if), 
@@ -31,7 +35,7 @@ module datapath (
 
     IfStageReg if_stage_reg(.clk(clk), 
                                 .rst(rst), 
-                                .freeze(freeze),
+                                .freeze(freeze_if),
                                 .flush(branch_taken),
                                 .pc_in(pc_if),
                                 .instruction_in(instruction_if),
@@ -55,7 +59,7 @@ module datapath (
 
     IdStage id_stage(.clk(clk),
                         .rst(rst),
-                        .hazard(1'b0),
+                        .hazard(hazard),
                         .wb_wb_en(wb_wb_en_wb),
                         .status_reg_out(status_register_out_exe),
                         .wb_dest(wb_dest_wb),
@@ -93,6 +97,7 @@ module datapath (
     IDStageReg id_stage_reg(.clk(clk),
                             .rst(rst),
                             .flush(branch_taken),
+                            .freeze(freeze_others),
                             .pc_in(pc_out_id),
                             .wb_en_in(wb_en_id),
                             .mem_r_en_in(mem_r_en_id),
@@ -173,6 +178,7 @@ module datapath (
     ExeStageReg exe_stage_reg(
         .clk(clk),
         .rst(rst),
+        .freeze(freeze_others),
         .wb_en_in(wb_en_out_exe),
         .mem_r_en_in(mem_r_en_out_exe),
         .mem_w_en_in(mem_w_en_out_exe),
@@ -192,7 +198,6 @@ module datapath (
     wire [31:0] data_memory_out_mem;
     wire [3:0] dest_out_mem;
 
-    wire mem_ready;
     wire [15:0] SRAM_DQ;
     wire [17:0] SRAM_ADDR;
     wire SRAM_UB_N;
@@ -215,7 +220,7 @@ module datapath (
         .alu_res_out(alu_res_out_mem),
         .data_memory_out(data_memory_out_mem),
         .dest_out(dest_out_mem),
-        .ready(mem_ready),
+        .mem_ready(mem_ready),
         .SRAM_DQ(SRAM_DQ),
         .SRAM_ADDR(SRAM_ADDR),
         .SRAM_UB_N(SRAM_UB_N),
@@ -240,6 +245,7 @@ module datapath (
 
     MemStageReg mem_stage_reg(.clk(clk),
                         .rst(rst),
+                        .freeze(freeze_others),
                         .wb_en_in(wb_en_out_mem),
                         .mem_r_en_in(mem_r_en_out_mem),
                         .alu_res_in(alu_res_mem),
@@ -272,7 +278,6 @@ module datapath (
         .exe_mem_r_en(mem_r_en_exe),
         .mem_wb_en(wb_en_mem),
         .two_src(two_src_id),
-        .ready(mem_ready),
         .hazard(hazard)
     );
 
