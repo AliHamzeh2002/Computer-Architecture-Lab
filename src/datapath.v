@@ -1,5 +1,12 @@
 module datapath (
-    input clk, rst, forward_en
+    input clk, rst, forward_en,
+    output [15:0] SRAM_DQ,
+    output [17:0] SRAM_ADDR,
+    output SRAM_UB_N,
+    output SRAM_LB_N,
+    output SRAM_WE_N,
+    output SRAM_CE_N,
+    output SRAM_OE_N
 );
 
     wire hazard;
@@ -198,13 +205,7 @@ module datapath (
     wire [31:0] data_memory_out_mem;
     wire [3:0] dest_out_mem;
 
-    wire [15:0] SRAM_DQ;
-    wire [17:0] SRAM_ADDR;
-    wire SRAM_UB_N;
-    wire SRAM_LB_N;
-    wire SRAM_WE_N;
-    wire SRAM_CE_N;
-    wire SRAM_OE_N;
+    
 
     MemStage mem_stage(
         .clk(clk),
@@ -230,13 +231,13 @@ module datapath (
         .SRAM_OE_N(SRAM_OE_N)
     );
 
-    Sram sram(
-        .clk(clk),
-        .rst(rst),
-        .SRAM_WE_N(SRAM_WE_N),
-        .SRAM_ADDR(SRAM_ADDR),
-        .SRAM_DQ(SRAM_DQ)
-    );
+    // Sram sram(
+    //     .clk(clk),
+    //     .rst(rst),
+    //     .SRAM_WE_N(SRAM_WE_N),
+    //     .SRAM_ADDR(SRAM_ADDR),
+    //     .SRAM_DQ(SRAM_DQ)
+    // );
 
     wire wb_en_wb, mem_r_en_wb;
     wire [31:0] alu_res_wb;

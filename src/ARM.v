@@ -305,7 +305,14 @@ inout	[35:0]	GPIO_1;					//	GPIO Connection 1
 datapath dp(
 	.clk(CLOCK_50),
 	.rst(SW[0]),
-	.forward_en(SW[3])
+	.forward_en(SW[3]),
+	.SRAM_DQ(SRAM_DQ),
+	.SRAM_ADDR(SRAM_ADDR),
+	.SRAM_UB_N(SRAM_UB_N),
+	.SRAM_LB_N(SRAM_LB_N),
+	.SRAM_WE_N(SRAM_WE_N),
+	.SRAM_CE_N(SRAM_CE_N),
+	.SRAM_OE_N(SRAM_OE_N)
 );
 	
 
