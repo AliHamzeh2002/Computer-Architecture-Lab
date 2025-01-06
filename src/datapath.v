@@ -231,13 +231,13 @@ module datapath (
         .SRAM_OE_N(SRAM_OE_N)
     );
 
-    // Sram sram(
-    //     .clk(clk),
-    //     .rst(rst),
-    //     .SRAM_WE_N(SRAM_WE_N),
-    //     .SRAM_ADDR(SRAM_ADDR),
-    //     .SRAM_DQ(SRAM_DQ)
-    // );
+    Sram sram(
+        .clk(clk),
+        .rst(rst),
+        .SRAM_WE_N(SRAM_WE_N),
+        .SRAM_ADDR(SRAM_ADDR),
+        .SRAM_DQ(SRAM_DQ)
+    );
 
     wire wb_en_wb, mem_r_en_wb;
     wire [31:0] alu_res_wb;

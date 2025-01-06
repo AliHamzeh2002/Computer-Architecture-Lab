@@ -12,7 +12,7 @@ module SramController(
     input rd_en,
     input [31:0] address,
     input [31:0] write_data,
-    output reg [31:0] read_data,
+    output reg [63:0] read_data,
     output reg ready,
 
     inout [15:0] SRAM_DQ,
@@ -26,10 +26,18 @@ module SramController(
     assign {SRAM_UB_N, SRAM_LB_N, SRAM_CE_N, SRAM_OE_N} = 4'b0000;
 
     wire [31:0] mem_addr;
-    wire [17:0] sram_low_addr, sram_high_addr;
+    wire [17:0] sram_first_low_addr, sram_first_high_addr, sram_second_low_addr, sram_second_high_addr;
+    wire [17:0] sram_low_write_addr, sram_high_write_addr;
+
     assign mem_addr = address - 32'd1024;
-    assign sram_low_addr = {mem_addr[18:2], 1'd0};
-    assign sram_high_addr = sram_low_addr + 18'd1;
+
+    assign sram_low_write_addr = {mem_addr[18:2], 1'd0};
+    assign sram_high_write_addr = sram_low_write_addr + 18'd1;
+
+    assign sram_first_low_addr = {mem_addr[18:3], 2'd0};
+    assign sram_first_high_addr = sram_first_low_addr + 18'd1;
+    assign sram_second_low_addr = sram_first_low_addr + 18'd2;
+    assign sram_second_high_addr = sram_first_low_addr + 18'd3;
 
     reg [15:0] data_queue;
 
@@ -57,7 +65,7 @@ module SramController(
         case (ps)
             `IDLE: ready = ~(wr_en | rd_en);
             `DATA_LOW: begin
-                SRAM_ADDR = sram_low_addr;
+                SRAM_ADDR = (wr_en) ? sram_low_write_addr : sram_first_low_addr;
                 SRAM_WE_N = (wr_en) ? 1'b0 : 1'b1;
                 if (wr_en) begin
                     data_queue = write_data[15:0];
@@ -67,7 +75,7 @@ module SramController(
                 end
             end
             `DATA_HIGH: begin
-                SRAM_ADDR = sram_high_addr;
+                SRAM_ADDR = (wr_en) ? sram_high_write_addr : sram_first_high_addr;
                 SRAM_WE_N = (wr_en) ? 1'b0 : 1'b1;
                 if (wr_en) begin
                     data_queue = write_data[31:16];
@@ -77,8 +85,18 @@ module SramController(
                 end
                 
             end
-            `WAIT1:;
-            `WAIT2:;
+            `WAIT1:begin
+                SRAM_ADDR = sram_second_low_addr;
+                if (rd_en) begin
+                    read_data[47:32] = SRAM_DQ;
+                end 
+            end
+            `WAIT2:begin
+                SRAM_ADDR = sram_second_high_addr;
+                if (rd_en) begin
+                    read_data[63:48] = SRAM_DQ;
+                end
+            end
             `DONE: ready = 1'b1;
             default:;
         endcase

@@ -22,15 +22,39 @@ module MemStage (
     assign alu_res_out = alu_res_in;
     assign dest_out = dest_in;
 
+    wire[63:0] sram_read_out;
+    wire [31:0] sram_w_data;
+    wire [31:0] sram_address;
+    wire sram_ready;
+    wire sram_r_en;
+    wire sram_w_en;
+
+    cacheController cache_controller(
+        .clk(clk),
+        .rst(rst),
+        .address(alu_res_in),
+        .w_data(val_rm_in),
+        .mem_r_en(mem_r_en_in),
+        .mem_w_en(mem_w_en_in),
+        .sram_r_data(sram_read_out),
+        .sram_ready(sram_ready),
+        .r_data(data_memory_out),
+        .ready(mem_ready),
+        .sram_address(sram_address),
+        .sram_w_data(sram_w_data),
+        .sram_r_en(sram_r_en),
+        .sram_w_en(sram_w_en)
+    );
+
     SramController sram_controller(
         .clk(clk),
         .rst(rst),
-        .wr_en(mem_w_en_in),
-        .rd_en(mem_r_en_in),
-        .address(alu_res_in),
-        .write_data(val_rm_in),
-        .read_data(data_memory_out),
-        .ready(mem_ready),
+        .wr_en(sram_w_en),
+        .rd_en(sram_r_en),
+        .address(sram_address),
+        .write_data(sram_w_data),
+        .read_data(sram_read_out),
+        .ready(sram_ready),
         .SRAM_DQ(SRAM_DQ),
         .SRAM_ADDR(SRAM_ADDR),
         .SRAM_UB_N(SRAM_UB_N),
