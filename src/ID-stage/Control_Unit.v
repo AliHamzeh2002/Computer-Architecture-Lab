@@ -3,7 +3,7 @@ module ControlUnit (
     input [3:0] opcode,
     input s_in,
     output b, s_out,
-    output reg wb_en, mem_r_en, mem_w_en, 
+    output reg wb_en, mem_r_en, mem_w_en, has_src1,
     output reg [3:0] exe_cmd
 );
 
@@ -15,10 +15,17 @@ module ControlUnit (
         wb_en = 1'b1;
         mem_r_en = 1'b0;
         mem_w_en = 1'b0;
+        has_src1 = 1'b1;
         if (mode == 2'b0) begin
             case (opcode)
-                4'b1101: exe_cmd = 4'b0001; // MOV
-                4'b1111: exe_cmd = 4'b1001; // MVN
+                4'b1101: begin
+                    exe_cmd = 4'b0001; // MOV
+                    has_src1 = 1'b0;
+                end
+                4'b1111: begin
+                    exe_cmd = 4'b1001; // MVN
+                    has_src1 = 1'b0;
+                end
                 4'b0100: exe_cmd = 4'b0010; // ADD
                 4'b0101: exe_cmd = 4'b0011; // ADC
                 4'b0010: exe_cmd = 4'b0100; // SUB
@@ -34,7 +41,10 @@ module ControlUnit (
                     exe_cmd = 4'b0110; // TST
                     wb_en = 1'b0;
                 end
-                default: exe_cmd = 4'b0000; // NOP
+                default: begin 
+                    exe_cmd = 4'b0000; // NOP
+                    has_src1 = 1'b0;
+                end
             endcase
         end
         else if (mode == 2'b01 && opcode == 4'b0100) begin // STR LDR
@@ -46,6 +56,9 @@ module ControlUnit (
             if (s_in == 1'b1) begin // LDR
                 mem_r_en = 1'b1;
             end
+        end
+        else if (mode == 2'b10)begin
+            has_src1 = 1'b0;
         end
     end
 endmodule

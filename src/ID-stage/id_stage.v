@@ -10,7 +10,7 @@ module IdStage (
     output [23:0] signed_imm_24,
     output imm,
     output c_out,
-    output two_src,
+    output two_src, has_src1,
     output [3:0] src1, src2
 );
 
@@ -52,7 +52,8 @@ module IdStage (
         .mem_w_en(mem_write_cu_out),
         .b(b_cu_out),
         .s_out(s_cu_out),
-        .exe_cmd(exe_cmd_cu_out)
+        .exe_cmd(exe_cmd_cu_out),
+        .has_src1(has_src1)
     );
 
     ConditionCheck condition_check(

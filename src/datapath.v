@@ -58,7 +58,7 @@ module datapath (
     wire [23:0] signed_imm_24_id;
     wire imm_id;
     wire c_id;
-    wire two_src_id;
+    wire two_src_id, has_src1_id;
     wire [3:0] src1_id, src2_id;
 
     wire [3:0] status_register_out_exe;
@@ -87,6 +87,7 @@ module datapath (
                         .signed_imm_24(signed_imm_24_id),
                         .imm(imm_id),
                         .c_out(c_id),
+                        .has_src1(has_src1_id),
                         .two_src(two_src_id),
                         .src1(src1_id),
                         .src2(src2_id)
@@ -278,6 +279,7 @@ module datapath (
         .mem_dest(dest_mem),
         .exe_mem_r_en(mem_r_en_exe),
         .mem_wb_en(wb_en_mem),
+        .has_src1(has_src1_id),
         .two_src(two_src_id),
         .hazard(hazard)
     );
